@@ -1,6 +1,6 @@
 # scriptor
 
-A "scripting" framework, to coordinate actions: For example, this can be useful to construct testing sequences in Go.
+`scriptor` is a framework to construct a scripted sequence of actions, such as for testing.
 
 # HOW TO USE
 
