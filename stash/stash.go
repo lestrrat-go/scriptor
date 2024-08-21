@@ -2,6 +2,7 @@ package stash
 
 import (
 	"context"
+	"errors"
 
 	"github.com/lestrrat-go/scriptor/ctxutil"
 )
@@ -43,6 +44,15 @@ func (s *stash) Set(k, v any) Stash {
 func (s *stash) Get(k any) (any, bool) {
 	v, ok := s.data[k]
 	return v, ok
+}
+
+func Set(ctx context.Context, key any, value any) error {
+	st := FromContext(ctx)
+	if st == nil {
+		return errors.New("stash.Set: no stash found in context")
+	}
+	st.Set(key, value)
+	return nil
 }
 
 func Fetch[T any](ctx context.Context, key any, dst *T) bool {

@@ -64,11 +64,9 @@ func (h *httpAction) Execute(ctx context.Context) error {
 		return fmt.Errorf("actions.httpAction: error during request: %w", err)
 	}
 
-	st := stash.FromContext(ctx)
-
 	logger.DebugContext(ctx, "actions.httpAction", slog.Any("request", req))
 	logger.DebugContext(ctx, "actions.httpAction", slog.Any("response", res))
-	st.Set(prevRequestKey{}, req)
-	st.Set(prevResponseKey{}, res)
+	stash.Set(ctx, prevRequestKey{}, req)
+	stash.Set(ctx, prevResponseKey{}, res)
 	return nil
 }
