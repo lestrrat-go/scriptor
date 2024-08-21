@@ -15,35 +15,17 @@ type prevRequestKey struct{}
 type prevResponseKey struct{}
 
 func PrevRequest(ctx context.Context) *http.Request {
-	st := stash.FromContext(ctx)
-	if st == nil {
-		return nil
-	}
-
-	v, ok := st.Get(prevRequestKey{})
-	if !ok {
-		return nil
-	}
-
-	if req, ok := v.(*http.Request); ok {
-		return req
+	var dst *http.Request
+	if stash.Fetch[*http.Request](ctx, prevRequestKey{}, &dst) {
+		return dst
 	}
 	return nil
 }
 
 func PrevResponse(ctx context.Context) *http.Response {
-	st := stash.FromContext(ctx)
-	if st == nil {
-		return nil
-	}
-
-	v, ok := st.Get(prevResponseKey{})
-	if !ok {
-		return nil
-	}
-
-	if res, ok := v.(*http.Response); ok {
-		return res
+	var dst *http.Response
+	if stash.Fetch[*http.Response](ctx, prevResponseKey{}, &dst) {
+		return dst
 	}
 	return nil
 }

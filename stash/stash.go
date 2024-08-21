@@ -1,6 +1,10 @@
 package stash
 
-import "context"
+import (
+	"context"
+
+	"github.com/lestrrat-go/scriptor/ctxutil"
+)
 
 type Stash interface {
 	Set(any, any) Stash
@@ -10,18 +14,15 @@ type Stash interface {
 type stashKey struct{}
 
 func FromContext(ctx context.Context) Stash {
-	v := ctx.Value(stashKey{})
-	if v == nil {
-		return nil
-	}
-	if s, ok := v.(Stash); ok {
-		return s
+	var dst Stash
+	if ctxutil.FromContext[Stash](ctx, stashKey{}, &dst) {
+		return dst
 	}
 	return nil
 }
 
 func InjectContext(ctx context.Context, s Stash) context.Context {
-	return context.WithValue(ctx, stashKey{}, s)
+	return ctxutil.InjectContext[Stash](ctx, stashKey{}, s)
 }
 
 type stash struct {
@@ -42,4 +43,22 @@ func (s *stash) Set(k, v any) Stash {
 func (s *stash) Get(k any) (any, bool) {
 	v, ok := s.data[k]
 	return v, ok
+}
+
+func Fetch[T any](ctx context.Context, key any, dst *T) bool {
+	st := FromContext(ctx)
+	if st == nil {
+		return false
+	}
+
+	v, ok := st.Get(key)
+	if !ok {
+		return false
+	}
+
+	if val, ok := v.(T); ok {
+		*dst = val
+		return true
+	}
+	return false
 }
