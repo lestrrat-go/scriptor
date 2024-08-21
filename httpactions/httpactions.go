@@ -66,7 +66,11 @@ func (h *httpAction) Execute(ctx context.Context) error {
 
 	logger.DebugContext(ctx, "actions.httpAction", slog.Any("request", req))
 	logger.DebugContext(ctx, "actions.httpAction", slog.Any("response", res))
-	stash.Set(ctx, prevRequestKey{}, req)
-	stash.Set(ctx, prevResponseKey{}, res)
+	if err := stash.Set(ctx, prevRequestKey{}, req); err != nil {
+		return fmt.Errorf("actions.httpAction: error storing request: %w", err)
+	}
+	if err := stash.Set(ctx, prevResponseKey{}, res); err != nil {
+		return fmt.Errorf("actions.httpAction: error storing response: %w", err)
+	}
 	return nil
 }
