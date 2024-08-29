@@ -47,7 +47,6 @@ func (s *Scene) Execute(ctx context.Context) error {
 	//nolint:intrange // this is on purpose
 	for i := 0; i < len(s.actions); i++ {
 		a := s.actions[i]
-		fmt.Fprintf(os.Stderr, "Executing %T\n", a)
 		if err := a.Execute(ctx); err != nil {
 			return err
 		}
