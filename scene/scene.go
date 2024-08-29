@@ -3,6 +3,8 @@ package scene
 import (
 	"context"
 	"errors"
+	"fmt"
+	"os"
 )
 
 var ErrEndOfScene = errors.New("end of scene")
@@ -34,6 +36,7 @@ func New() *Scene {
 }
 
 func (s *Scene) Add(a Action) *Scene {
+	fmt.Fprintf(os.Stderr, "Add called with %T\n", a)
 	s.actions = append(s.actions, a)
 	return s
 }
@@ -41,7 +44,10 @@ func (s *Scene) Add(a Action) *Scene {
 func (s *Scene) Execute(ctx context.Context) error {
 	ctx = InjectContext(ctx, s)
 
-	for _, a := range s.actions {
+	//nolint:intrange // this is on purpose
+	for i := 0; i < len(s.actions); i++ {
+		a := s.actions[i]
+		fmt.Fprintf(os.Stderr, "Executing %T\n", a)
 		if err := a.Execute(ctx); err != nil {
 			return err
 		}
