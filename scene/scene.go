@@ -3,8 +3,6 @@ package scene
 import (
 	"context"
 	"errors"
-	"fmt"
-	"os"
 )
 
 var ErrEndOfScene = errors.New("end of scene")
@@ -36,7 +34,6 @@ func New() *Scene {
 }
 
 func (s *Scene) Add(a Action) *Scene {
-	fmt.Fprintf(os.Stderr, "Add called with %T\n", a)
 	s.actions = append(s.actions, a)
 	return s
 }
